@@ -12,10 +12,6 @@ python:
 git:
   depth: 3
 
-branches:
-  only:
-    - master
-
 services:
   - docker
 
@@ -36,6 +32,7 @@ env:
     - REQ_LOCALS="$TRAVIS_BUILD_DIR,$HOME/dd-agent,$HOME/integrations-core"
   matrix:
     - TRAVIS_FLAVOR=default
+    - TRAVIS_FLAVOR=bbs FLAVOR_VERSION=latest
     # END OF TRAVIS MATRIX
 
 before_install:
