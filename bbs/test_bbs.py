@@ -1,38 +1,60 @@
-# (C) Datadog, Inc. 2010-2016
-# All rights reserved
-# Licensed under Simplified BSD License (see LICENSE)
-
-# stdlib
 from nose.plugins.attrib import attr
-
-# 3p
-
-# project
 from tests.checks.common import AgentCheckTest
+import mock
 
-
-instance = {
-    'host': 'localhost',
-    'port': 26379,
-    'password': 'datadog-is-devops-best-friend'
+CONFIG_HEALTHY = {
+    'instances': [{
+        'url': 'https://localhost:8080',
+    }]
 }
 
+CONFIG_BAD_STATUS_CODE = {
+    'instances': [{
+        'url': 'https://localhost:8081',
+    }]
+}
 
-# NOTE: Feel free to declare multiple test classes if needed
+CONFIG_CANT_CONECT = {
+    'instances': [{
+        'url': 'https://localhost:8083',
+    }]
+}
+def mocked_requests_post(*args, **kwargs):
+    class MockResponse:
+        def __init__(self, json_data, status_code):
+            self.json_data = json_data
+            self.status_code = status_code
+
+        def json(self):
+            return self.json_data
+
+    if args[0] == 'https://localhost:8080':
+        return MockResponse({}, 200)
+    return MockResponse({}, 503)
 
 @attr(requires='bbs')
 class TestBbs(AgentCheckTest):
     """Basic Test for bbs integration."""
     CHECK_NAME = 'bbs'
 
-    def test_check(self):
-        """
-        Testing Bbs check.
-        """
-        self.load_check({}, {})
+    @mock.patch('requests.post', side_effect=mocked_requests_post)
+    def test_healthy_bbs_response(self, mock_requests):
+        self.run_check(CONFIG_HEALTHY)
 
-        # run your actual tests...
+        tags = ['bbs_healthy:yes']
+        self.assertMetric('cf.bbs.Healthy', tags=tags, count=1)
+        self.assertMetric('cf.bbs.ResponseTime', tags=tags, count=1)
 
-        self.assertTrue(True)
-        # Raises when COVERAGE=true and coverage < 100%
-        self.coverage_report()
+    @mock.patch('requests.post', side_effect=mocked_requests_post)
+    def test_bad_status_code_bbs_response(self, mock_requests):
+        self.run_check(CONFIG_BAD_STATUS_CODE)
+
+        tags = ['bbs_healthy:no']
+        self.assertMetric('cf.bbs.Healthy', tags=tags, count=1)
+        self.assertMetric('cf.bbs.ResponseTime', tags=tags, count=1)
+
+    def test_cant_connect_to_bbs_response(self):
+        self.run_check(CONFIG_CANT_CONECT)
+
+        tags = ['bbs_healthy:no']
+        self.assertMetric('cf.bbs.Healthy', tags=tags, count=1)
