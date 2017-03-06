@@ -1,11 +1,10 @@
 init_config:
-  # Any global configurable parameters should be added here
+  default_timeout: 5
 
 instances:
-  #   A typical instance configuration might include a hostname and port
-  #   a set of customizable tags and other parameters we might need to
-  #   configure the behavior of our check.
-  #
-  # - host: localhost
-  #   port: 26379
-  #   tags: ['custom:tag']
+  - url: https://localhost:8889//v1/actual_lrp_groups/list
+    timeout: 1
+    client_cert: /path/to/cert/client.crt
+    client_key: /path/to/key/cient.key
+    ca_cert: /path/to/cert/ca.crt
+    

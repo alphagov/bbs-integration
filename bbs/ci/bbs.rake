@@ -17,9 +17,6 @@ namespace :ci do
       install_requirements('bbs/requirements.txt',
                            "--cache-dir #{ENV['PIP_CACHE']}",
                            "#{ENV['VOLATILE_DIR']}/ci.log", use_venv)
-      # sample docker usage
-      # sh %(docker create -p XXX:YYY --name bbs source/bbs:bbs_version)
-      # sh %(docker start bbs)
     end
 
     task before_script: ['ci:common:before_script']
@@ -34,11 +31,6 @@ namespace :ci do
     task before_cache: ['ci:common:before_cache']
 
     task cleanup: ['ci:common:cleanup']
-    # sample cleanup task
-    # task cleanup: ['ci:common:cleanup'] do
-    #   sh %(docker stop bbs)
-    #   sh %(docker rm bbs)
-    # end
 
     task :execute do
       exception = nil
