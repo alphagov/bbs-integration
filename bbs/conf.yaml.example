@@ -1,0 +1,10 @@
+init_config:
+  default_timeout: 5
+
+instances:
+  - url: https://localhost:8889//v1/actual_lrp_groups/list
+    timeout: 1
+    client_cert: /path/to/cert/client.crt
+    client_key: /path/to/key/cient.key
+    ca_cert: /path/to/cert/ca.crt
+    
