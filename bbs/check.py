@@ -25,10 +25,10 @@ class BbsCheck(AgentCheck):
         # Use a hash of the URL as an aggregation key
         aggregation_key = md5(url).hexdigest()
 
-        # Cert paths are taken from https://github.com/cloudfoundry/diego-release/blob/d52495a551e0ce15eadd21eb4460af9dfacc7148/jobs/cfdot/templates/setup.erb#L5
-        client_cert = instance.get('client_cert','/var/vcap/jobs/cfdot/config/certs/bbs/client.crt')
-        client_key = instance.get('client_key','/var/vcap/jobs/cfdot/config/certs/bbs/client.key')
-        ca_cert = instance.get('ca_cert','/var/vcap/jobs/cfdot/config/certs/bbs/ca.crt')
+        # Cert paths are taken from https://github.com/cloudfoundry/diego-release/blob/v1.35.0/jobs/cfdot/templates/setup.erb#L9-L11
+        client_cert = instance.get('client_cert','/var/vcap/jobs/cfdot/config/certs/cfdot/client.crt')
+        client_key = instance.get('client_key','/var/vcap/jobs/cfdot/config/certs/cfdot/client.key')
+        ca_cert = instance.get('ca_cert','/var/vcap/jobs/cfdot/config/certs/cfdot/ca.crt')
 
         # Check the URL
         start_time = time.time()
